@@ -1,7 +1,7 @@
-defmodule Echo.Adapters.Behavior do
+defmodule Echo.Adapters.Behaviour do
   use Behaviour
 
-  defcallback notify(term | String.t | nil, Map.t | nil) :: {:ok, term} | {:error, term, term | String.t}
+  defcallback notify(term | String.t | nil, Map.t | nil) :: {:ok, term, any} | {:error, term, term | String.t}
 
   @doc false
   defmacro __using__(_opts) do

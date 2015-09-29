@@ -1,4 +1,4 @@
-defmodule Aeacus.Mixfile do
+defmodule Echo.Mixfile do
   use Mix.Project
 
   def project do
@@ -27,17 +27,18 @@ defmodule Aeacus.Mixfile do
 
 
   defp applications(:test) do
-    applications(:prod)
+    [:logger] ++ applications(:prod)
   end
 
   defp applications(_) do
-    [:logger]
+    []
   end
 
   defp deps do
     [
-      {:ex_doc, github: "elixir-lang/ex_doc", only: [:dev, :test]},
-      {:earmark, ">= 0.0.0", only: [:dev, :test]},
+      {:ex_doc, ">=0.1.0", only: [:test]},
+      {:mailman, "~> 0.2.0", only: [:test]},
+        {:eiconv, github: "zotonic/eiconv", only: [:test]},
     ]
   end
 
@@ -52,7 +53,7 @@ defmodule Aeacus.Mixfile do
 
   defp description do
     """
-      A basic notification dispatch system, composed from many adapters. Deliver emails, sms, etc.
+      A basic notification dispatch system, composed from many adapters. Useful for email, sms, analytics, logs, etc.
     """
   end
 

@@ -1,18 +1,25 @@
 defmodule Echo.Adapters.Email do
-  use Echo.Adapters.Behavior
+  @moduledoc """
+  An Email adapter powered by [Mailman](https://github.com/kamilc/mailman)
+
+  When using this adapter, add the appropriate dependency to your mix file.
+  See Adapter Project page for up-to-date details.
+
+  ex.)
+    {:echo, "~> x.x.x"}
+    {:mailman, "~> x.x.x"},
+    {:eiconv, github: "zotonic/eiconv"}
+  """
+  use Echo.Adapters.Behaviour
+
 
   def notify(event_type, data) do
-    template = case event_type do
-      :register -> "emails/register"
-      :forgot_password -> "emails/password"
-      _ -> nil
-    end
-
-    if is_nil(template) do
-      {:error, __MODULE__, :unknown_event}
+    config = Echo.config.hooks[:email].config(event_type, data)
+    message = Echo.config.hooks[:email].message(event_type, data)
+    if message do
+      {:ok, __MODULE__, Mailman.deliver(message, config)}
     else
-      Mailman.compose(to: data.user.email, from: "test@example.com", subject: template.subject, body: template.body)
-      {:ok, __MODULE__}
+      {:error, __MODULE__, :unknown_event}
     end
   end
 end

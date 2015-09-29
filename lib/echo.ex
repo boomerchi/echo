@@ -17,10 +17,11 @@ defmodule Echo do
   end
 
   @doc """
-  Notify calls dispatch/2 on each adapter, which checks preferences then sends notification
+  Notify calls dispatch/2 on each adapter, which checks preferences then sends notification.
+  A List of tuples is returned of the form {:ok, __MODULE__} or {:error, __MODULE__, term | String.t}
+  indicating the status of each call.
   """
-  # TODO - Return keyword list with status of each item
-  @spec notify(term | String.t, Map.t) :: Map.t | nil
+  @spec notify(term | String.t, Map.t) :: List.t | nil
   def notify(event_type, data) do
     if Echo.config[:preferences].notification_allowed?(event_type, data) do
       Enum.map Echo.config[:adapters], fn(adapter) -> adapter.dispatch(event_type, data) end

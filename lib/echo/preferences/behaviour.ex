@@ -1,4 +1,4 @@
-defmodule Echo.Preferences.Behavior do
+defmodule Echo.Preferences.Behaviour do
   @moduledoc """
   notification_allowed?/2 & notification_allowed?/3 must be provided
   """
