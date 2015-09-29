@@ -33,8 +33,8 @@ defmodule Echo.Preferences.Test do
   #########################
 
   # When using the preferences as a blacklist: default to allowing
-  use Echo.Preferences.AllowAllBehaviour
+  use Echo.Preferences.AllowAll
 
   # Alternatively, design this file as a whitelist: default to blocking
-  # use Echo.Preferences.DenyAllBehaviour
+  # use Echo.Preferences.DenyAll
 end

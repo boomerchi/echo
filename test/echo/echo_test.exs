@@ -15,11 +15,11 @@ defmodule EchoTest do
 
   # Example of adapter specific policy
   test "notify returns a status list for each adapter" do
-    assert Echo.notify(:register, %{user: %{type: 'user', status: 'blocked'}}) == [{:ok, Echo.Adapters.Logger}, {:error, Echo.Adapters.Email, :permission_denied}]
+    assert Echo.notify(:register, %{user: %{type: 'user', status: 'blocked'}}) == [{:ok, Echo.Adapters.Logger, :ok}, {:error, Echo.Adapters.Email, :permission_denied}]
   end
 
   # Example of adapter opting not to implement an event_type
   test "notify returns a status list for each adapter2" do
-    assert Echo.notify(:comment, %{user: %{type: 'user', status: 'unblocked'}}) == [{:ok, Echo.Adapters.Logger}, {:error, Echo.Adapters.Email, :unknown_event}]
+    assert Echo.notify(:comment, %{user: %{type: 'user', status: 'unblocked'}}) == [{:ok, Echo.Adapters.Logger, :ok}, {:error, Echo.Adapters.Email, :unknown_event}]
   end
 end
