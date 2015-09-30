@@ -4,7 +4,7 @@ defmodule Echo.Mixfile do
   def project do
     [
       app: :echo,
-      version: "0.0.1",
+      version: "0.1.0",
       elixir: "~> 1.0",
       elixirc_paths: elixirc_paths(Mix.env),
       description: description,
@@ -36,9 +36,10 @@ defmodule Echo.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, ">=0.1.0", only: [:test]},
+      {:ex_doc, ">=0.1.0", only: [:dev, :test]},
+        {:earmark, ">= 0.0.0", only: [:dev, :test]},
       {:mailman, "~> 0.2.0", only: [:test]},
-        {:eiconv, github: "zotonic/eiconv", only: [:test]},
+        {:eiconv, github: "zotonic/eiconv", only: [:test]}
     ]
   end
 
@@ -53,7 +54,9 @@ defmodule Echo.Mixfile do
 
   defp description do
     """
-      A basic notification dispatch system, composed from many adapters. Useful for email, sms, analytics, logs, etc.
+      A simple & highly extendable, meta-notification system; Echo checks
+      notification preferences & dispatch notifications to different adapters
+      (ex. email, logger, analytics, sms, etc.)
     """
   end
 

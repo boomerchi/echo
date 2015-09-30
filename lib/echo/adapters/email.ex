@@ -6,12 +6,13 @@ defmodule Echo.Adapters.Email do
   See Adapter Project page for up-to-date details.
 
   ex.)
+  ```
     {:echo, "~> x.x.x"}
     {:mailman, "~> x.x.x"},
     {:eiconv, github: "zotonic/eiconv"}
+  ```
   """
   use Echo.Adapters.Behaviour
-
 
   def notify(event_type, data) do
     config = Echo.config.hooks[:email].config(event_type, data)

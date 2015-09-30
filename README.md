@@ -1,40 +1,49 @@
-[Aeacus - The holder of keys](https://en.wikipedia.org/wiki/Aeacus)
+[Echo - ECHO Echo echo...](https://en.wikipedia.org/wiki/Echo_(mythology))
 ======
 
-A simple, secure, and highly configurable Elixir identity [username | email | id | etc.]/password authentication module to use with Ecto.
+A simple & highly extendable, meta-notification system; Echo checks notification preferences & dispatch notifications to different adapters (ex. email, logger, analytics, sms, etc.).
 
-[![Build Status](https://travis-ci.org/zmoshansky/aeacus.svg)](https://travis-ci.org/zmoshansky/aeacus) [![Hex.pm](http://img.shields.io/hexpm/v/aeacus.svg)](https://hex.pm/packages/aeacus) [![Hex.pm](http://img.shields.io/hexpm/dt/aeacus.svg)](https://hex.pm/packages/aeacus) [![Github Issues](http://githubbadges.herokuapp.com/zmoshansky/aeacus/issues.svg)](https://github.com/zmoshansky/aeacus/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/zmoshansky/aeacus/pulls.svg)](https://github.com/zmoshansky/aeacus/pulls)
+[![Build Status](https://travis-ci.org/zmoshansky/echo.svg)](https://travis-ci.org/zmoshansky/echo) [![Hex.pm](http://img.shields.io/hexpm/v/echo.svg)](https://hex.pm/packages/echo) [![Hex.pm](http://img.shields.io/hexpm/dt/echo.svg)](https://hex.pm/packages/echo) [![Github Issues](http://githubbadges.herokuapp.com/zmoshansky/echo/issues.svg)](https://github.com/zmoshansky/echo/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/zmoshansky/echo/pulls.svg)](https://github.com/zmoshansky/echo/pulls)
 
 #### Description ####
-Aeacus only performs authentication, making it well suited for integration with session storage, or a token system; like [Guardian](https://github.com/hassox/guardian). Alternatively, this could be used directly over a secure (HTTPS) connection with [HTTP Basic Auth](https://en.wikipedia.org/wiki/Basic_access_authentication); But, it is highly discouraged as there is a greater security risk, due to repeatedly sending your authentication information to the server, only relying on TLS for security.
-
-#### Requirements ####
-Aeacus requires that you have an Ecto model that has UNIQUE(identity_field) and password_field. These fields can be configured to easily match your schema, whether it be `username`, `email`, or `pass`, `password`, `hash`, `hashed_password`, etc. Of course, the passwords must be stored using the same crypto system as Aeacus; The password should be salted and hashed, plaintext is heavily discouraged. See the tests for examples.
+Echo is designed to be highly adaptable to your notification needs through different adapters and per adapter hooks. A notification is dispatched with `Echo.notify/2` which then calls on each registered adapter, requesting that it delivers the notification. Each adapter is passed an `event_type`, of your designation, and `data` that it may use to deliver the notification.
 
 #### Config ####
-You must set the `:repo` and `:model` for Aeacus. The other options have sane defaults.
+Echo is easible configured, a possible sample configuration is given below. Custom Preferences & Adapters are easy to build, look at `lib/echo/adapters/email` & `test/support/test_preferences.ex` for examples. Hooks allow you to specify the module which implements `@behaviour Echo.Hooks`, which generates the adapter specific data needed to deliver a notification (see `test/support/email_hook` for an example); this might include: selecting the correct template, parsing data, or even nothing at all. Doing nothing allows unknown event types to be skipped by adapters.
 
 ```
-config :aeacus, Aeacus,
-  repo: MyApp.Repo,
-  model: MyApp.User,
-  # Optional, The following are the default options
-  crypto: Comeonin.Pbkdf2,
-  identity_field: :email,
-  password_field: :hashed_password,
-  error_message: "Invalid identity or password."
+config :echo, Echo,
+  preferences: Echo.Preferences.AllowAll,
+  adapters: [Echo.Adapters.Logger, Echo.Adapters.Email, YourApp.CustomAdapter],
+  hooks: %{
+    email: YourApp.EmailHook
+  }
 ```
 
-#### Example Session Controller ####
-`Aeacus.Authenticator.authenticate` expects a `Map` with keys `:identity`, and `:password`. Alternatively, `Aeacus.Authenticator.authenticate_resource` can be used if a resource is already loaded.
+#### Architecture ####
+Echo is somewhat like a pub-sub system; events are published, and adapters that are capable of handling them dispatch the notification accordingly. The intended flow is:
 
+- `preferences` module provides an ACL to check whether an event should be delivered on a particular adapter according to a user's preferences (ex. deny newsletters, but allow billing emails).
+- `hooks` provide a way to prepare arguments to an adapter based on the `event_type` & `data`. A hook can prevent it's adapter from delivering the notification if no data is returned. This means notifications are only sent for adapters that are configured to handle them, otherwise, they are harmlessly disregarded by that adapter.
+
+ex.) In the code below, an email is sent for `:user_register`, but not `:log_analytics`; `Adapter.Email` will harmlessly skip it as an `:unknown_event`.
 ```
-defmodule MyApp.SessionController do
-  def create(conn, params) do
-    case Aeacus.Authenticator.authenticate %{identity: params[:email], password: params[:pass]} do
-      {:ok, user} -> CreateTokenOrCookie
-      {:error, message} -> DisplayAuthenticationScreenAgain
+Echo.notify(:log_analytics, data)
+...
+Echo.notify(:user_register, data)
+```
+```
+defmodule App.EmailHook
+@behaviour Echo.Hooks
+
+  def message(event_type, data) do
+    ...
+    template = case event_type do
+      :user_register -> "emails/register.html.eex"
+      :user_forgot_password -> "emails/forgot_password.html.eex"
+      _ -> nil
     end
+    ...
   end
 end
 ```

@@ -1,4 +1,5 @@
 defmodule Echo.Test.EmailHook do
+  @behaviour Echo.Hooks
 
   # TODO - Remove pending deletion in Mailman
   def config(_event_type, _data) do

@@ -1,11 +1,13 @@
 defmodule Echo.Adapters.Behaviour do
   use Behaviour
 
-  defcallback notify(term | String.t | nil, Map.t | nil) :: {:ok, term, any} | {:error, term, term | String.t}
+  defcallback notify(term | String.t | nil, any) :: {:ok, term, any} | {:error, term, term | String.t}
 
   @doc false
   defmacro __using__(_opts) do
     quote do
+      @behaviour Echo.Adapters.Behaviour
+
       @spec dispatch(term | String.t | nil, Map.t | nil) :: Tuple.t
       def dispatch(event_type, data) do
         if Echo.config[:preferences].notification_allowed?(__MODULE__, event_type, data) do
