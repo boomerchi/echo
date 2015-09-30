@@ -46,7 +46,7 @@ defmodule Echo.Mixfile do
   defp package do
     [
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
-      contributors: ["Zachary Moshansky"],
+      maintainers: ["Zachary Moshansky"],
       licenses: ["BSD 3-Clause"],
       links: %{"GitHub" => "https://github.com/zmoshansky/echo"}
     ]
