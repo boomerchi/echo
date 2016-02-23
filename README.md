@@ -9,7 +9,7 @@ A simple & highly extendable, meta-notification system; Echo checks notification
 Echo is designed to be highly adaptable to your notification needs through different adapters and per adapter hooks. A notification is dispatched with `Echo.notify/2` which then calls on each registered adapter, requesting that it delivers the notification. Each adapter is passed an `event_type`, of your designation, and `data` that it may use to deliver the notification.
 
 #### Config ####
-Echo is easible configured, a possible sample configuration is given below. Custom Preferences & Adapters are easy to build, look at `lib/echo/adapters/email` & `test/support/test_preferences.ex` for examples. Hooks allow you to specify the module which implements `@behaviour Echo.Hooks`, which generates the adapter specific data needed to deliver a notification (see `test/support/email_hook` for an example); this might include: selecting the correct template, parsing data, or even nothing at all. Doing nothing allows unknown event types to be skipped by adapters.
+Echo is easily configured. A possible sample configuration is given below. Custom Preferences & Adapters are easy to build, look at `lib/echo/adapters/email` & `test/support/test_preferences.ex` for examples. Hooks allow you to specify the module which implements `@behaviour Echo.Hooks`, which generates the adapter specific data needed to deliver a notification (see `test/support/email_hook` for an example); this might include: selecting the correct template, parsing data, or even nothing at all. Doing nothing allows unknown event types to be skipped by adapters.
 
 ```
 config :echo, Echo,
